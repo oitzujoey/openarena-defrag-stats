@@ -38,6 +38,10 @@ function rcon {
     $CRCON -p $PASSWORD -P $PORT localhost "$1"
 }
 
+function timesort {
+    sort -g -t ' ' -k 3 $1 -o $1
+}
+
 while read -r LINE
 do
     #   Display game output
@@ -57,11 +61,8 @@ do
             rcon 'say "!times  Top times"'
             rcon 'say "!speeds Top speeds (Note: you must beat your local top speed to get on this list)"'
         fi
-    fi
-    
-    #   Top times
-    if [ "$CMD" == "say" ]
-    then
+        
+        #   List top times
         if [ "$ARG2" == "!times" ]
         then
             rcon 'say "Top times:"'
@@ -71,10 +72,8 @@ do
                 rcon "$CMDLINE"
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
         fi
-    fi
-    
-    if [ "$CMD" == "say" ]
-    then
+        
+        #   List top speeds
         if [ "$ARG2" == "!speeds" ]
         then
             rcon 'say "Top speeds:"'
@@ -95,8 +94,17 @@ do
     
     if [ "$CMD" == "broadcast" ] && [ "$SUBCMD" == "finish" ]
     then
+        COUNT=$(echo $ARG2 | awk -F':' '{print NF-1}')
+        echo $COUNT
+        
+        #   Add a leading zero to the time if necessary.
+        if [ "$COUNT" == '1' ]
+        then
+            ARG2="0:$ARG2"
+        fi
+        
         echo "say $ARG1^5 $ARG2" >> $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
-        sort -g -t ' ' -k 3 $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat -o $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
+        timesort $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
         
         if [ "$DUPLICATES" == '0' ]
         then
@@ -114,7 +122,7 @@ do
     if [ "$CMD" == "ClientSpeedAward" ]
     then
         echo "say $ARG2^5 $ARG1" >> $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
-        sort -g -t ' ' -k 3 $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat -o $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
+        timesort $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
         
         if [ "$DUPLICATES" == '0' ]
         then
