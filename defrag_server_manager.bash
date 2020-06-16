@@ -95,7 +95,6 @@ do
     if [ "$CMD" == "broadcast" ] && [ "$SUBCMD" == "finish" ]
     then
         COUNT=$(echo $ARG2 | awk -F':' '{print NF-1}')
-        echo $COUNT
         
         #   Add a leading zero to the time if necessary.
         if [ "$COUNT" == '1' ]
