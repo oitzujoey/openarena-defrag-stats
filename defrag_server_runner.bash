@@ -15,10 +15,8 @@ DIR=~/.defrag
 BASEDIR=$DIR/baseoa
 #   Config "queue" directory. /tmp/ would be ideal, but that is slightly more difficult than I thought.
 TEMPDIR=$BASEDIR/tmp
-#   Script to call that manages server command input.
-WRITER=defrag_server_writer.bash
-#   Script to call that manages server command output.
-READER=defrag_server_reader.bash
+#   Script to call that manages server I/O.
+MANAGER=defrag_server_manager.bash
 
 
 red=$'\e[1;31m'
@@ -37,32 +35,12 @@ mkdir /tmp/defrag-server-$$
 LASTDIR=$(pwd)
 cd /tmp/defrag-server-$$
 
-mkfifo writerpid
-mkfifo gamepid
-mkfifo readerpid
-mkfifo pipe
-
 #   Run the game
 printf "${blu}=== Starting $GAME ===${end}\n"
 
-#   It seems the proper way to make Bash do something useful is to abuse it. On second thought, am I abusing it, or is Bash abusing me?
-( $BINDIR/$WRITER $TEMPDIR <&0 & echo $! >writerpid & ) | ( $BINDIR/$SERVER $SARGS $@ & echo $! >gamepid & ) 2> >( $BINDIR/$READER $TEMPDIR $BASEDIR $DIR & )
-#>(while read -r LINE ; do echo $LINE  ; done ; echo "Exited" &)
-# echo $! >readerpid &
-#| ($BINDIR/$READER < pipe & echo $! >readerpid & )
-# ( $BINDIR/$SERVER $SARGS $@ & printf $! >gamepid & )
-PID=$(cat gamepid)
-
-#   Wait until the game exits
-while kill -0 $PID &> /dev/null
-do
-    sleep 0.1
-done
+$BINDIR/$SERVER $SARGS $@ 2> >(tee >($BINDIR/$MANAGER $TEMPDIR $BASEDIR $DIR))
 
 printf "${blu}=== $GAME exited ===${end}\n"
-
-kill -s SIGTERM `cat writerpid`
-# kill -s SIGTERM `cat readerpid`
 
 cd $LASTDIR
 rm /tmp/defrag-server-$$ -r

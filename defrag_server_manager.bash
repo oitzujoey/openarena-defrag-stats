@@ -7,14 +7,12 @@ STATSDIR=statistics
 TIMEDIR=times
 SPEEDDIR=speeds
 DUPLICATES=0
+CRCON=/home/joey/Documents/projects/crcon/crcon
+PASSWORD='password'
+PORT='27960'
 
 MAP='__unknown__'
 PROMODE='__unknown__'
-
-mkdir -p $DIR/$STATSDIR/vq3/$TIMEDIR
-mkdir -p $DIR/$STATSDIR/vq3/$SPEEDDIR
-mkdir -p $DIR/$STATSDIR/cpm/$TIMEDIR
-mkdir -p $DIR/$STATSDIR/cpm/$SPEEDDIR
 
 red=$'\e[1;31m'
 grn=$'\e[1;32m'
@@ -24,10 +22,21 @@ mag=$'\e[1;35m'
 cyn=$'\e[1;36m'
 end=$'\e[0m'
 
+echo "${grn}I/O Manager started${end}"
+
+mkdir -p $DIR/$STATSDIR/vq3/$TIMEDIR
+mkdir -p $DIR/$STATSDIR/vq3/$SPEEDDIR
+mkdir -p $DIR/$STATSDIR/cpm/$TIMEDIR
+mkdir -p $DIR/$STATSDIR/cpm/$SPEEDDIR
+
+function rcon {
+    $CRCON -p $PASSWORD -P $PORT localhost "$1"
+}
+
 while read -r LINE
 do
     #   Display game output
-    echo "$LINE"
+#     echo "$LINE"
     
     
     #   Get user inputted commands
@@ -39,20 +48,23 @@ do
     then
         if [ "$ARG2" == "!help" ]
         then
-            echo 'say "Recognized commands"' > /tmp/help.cfg
-            echo 'say "!times  Top times"' >> /tmp/help.cfg
-            echo 'say "!speeds Top speeds"' >> /tmp/help.cfg
-            mv /tmp/help.cfg $TEMPDIR/
+            rcon 'say "Recognized commands"'
+            rcon 'say "!times  Top times"'
+            rcon 'say "!speeds Top speeds (Note: you must beat your local top speed to get on this list)"'
         fi
     fi
     
+    #   Top times
     if [ "$CMD" == "say" ]
     then
         if [ "$ARG2" == "!times" ]
         then
-            echo 'say "Top times:"' > /tmp/times.cfg
-            head -n5 $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat >> /tmp/times.cfg
-            mv /tmp/times.cfg $TEMPDIR/
+            rcon 'say "Top times:"'
+            for I in {1..5}
+            do
+                read -r CMDLINE
+                rcon "$CMDLINE"
+            done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
         fi
     fi
     
@@ -60,9 +72,12 @@ do
     then
         if [ "$ARG2" == "!speeds" ]
         then
-            echo 'say "Top speeds:"' > /tmp/speeds.cfg
-            head -n5 $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat >> /tmp/speeds.cfg
-            mv /tmp/speeds.cfg $TEMPDIR/
+            rcon 'say "Top speeds:"'
+            for I in {1..5}
+            do
+                read -r CMDLINE
+                rcon "$CMDLINE"
+            done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
         fi
     fi
     
@@ -130,4 +145,4 @@ do
     
 done
 
-echo "Reader exited"
+echo "${grn}I/O Manager exited${end}"
