@@ -63,7 +63,7 @@ do
         fi
         
         #   List top times
-        if [ "$ARG2" == "!times" ]
+        if [ "$ARG2" == "!times" ] || [ "$ARG2" == "!top" ]
         then
             rcon 'say "Top times:"'
             for I in {1..5}
