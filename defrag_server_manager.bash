@@ -3,12 +3,17 @@
 TEMPDIR=$1
 BASEDIR=$2
 DIR=$3
+#   This will be placed in .openarena by default
 STATSDIR=statistics
 TIMEDIR=times
 SPEEDDIR=speeds
+#   Do you want multiple top times attributed to one person?
 DUPLICATES=0
-CRCON=/home/joey/Documents/projects/crcon/crcon
+#   CRCON command
+CRCON=crcon
+#   Your rcon password
 PASSWORD='password'
+#   Server port. Localhost is assumed.
 PORT='27960'
 
 MAP='__unknown__'
