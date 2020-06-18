@@ -55,7 +55,8 @@ do
     #   Get user inputted commands
     CMD=$(echo $LINE | cut -f1 --delimiter=":" | tr -d '[:space:]')
     ARG1=$(echo $LINE | cut -f2 --delimiter=":" | tr -d '[:space:]')
-    ARG2=$(echo $LINE | cut -f3- --delimiter=":" | tr -d '[:space:]')
+    ARG2=$(echo $LINE | cut -f3 -d' ' | tr -d '[:space:]')
+    ARG3=$(echo $LINE | cut -f4 -d' ' | tr -d '[:space:]')
     
     if [ "$CMD" == "say" ]
     then
@@ -70,10 +71,14 @@ do
         if [ "$ARG2" == "!times" ] || [ "$ARG2" == "!top" ]
         then
             rcon 'say "Top times:"'
-            for I in {1..5}
+            
+            I=1
+            while [ "$I" -le "${ARG3:-5}" ]
             do
+                sleep 0.1
                 read -r CMDLINE
                 rcon "$CMDLINE"
+                I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
         fi
         
@@ -81,10 +86,14 @@ do
         if [ "$ARG2" == "!speeds" ]
         then
             rcon 'say "Top speeds:"'
-            for I in {1..5}
+            
+            I=1
+            while [ "$I" -le "${ARG3:-5}" ]
             do
+                sleep 0.1
                 read -r CMDLINE
                 rcon "$CMDLINE"
+                I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
         fi
     fi
