@@ -8,5 +8,5 @@
     Make the time the last argument on the line, and make the name the rest of the arguments.
     a   Sort does not understand how to sort times of players with a space in their name.
         See the code.
-4*  Rcon is unreliable.
-    Remove dependency upon rcon.
+4   Rcon is unreliable.
+    Use the Ioquake3 named pipe instead.

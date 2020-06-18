@@ -3,16 +3,13 @@
 TEMPDIR=$1
 BASEDIR=$2
 DIR=$3
+PIPE=$DIR/defrag/$4
 #   This will be placed in .openarena by default
 STATSDIR=statistics
 TIMEDIR=times
 SPEEDDIR=speeds
 #   Do you want multiple top times attributed to one person?
 DUPLICATES=0
-#   CRCON command
-CRCON=crcon
-#   Your rcon password
-PASSWORD='password'
 #   Server port. Localhost is assumed.
 PORT='27960'
 
@@ -36,10 +33,6 @@ mkdir -p $DIR/$STATSDIR/cpm/$SPEEDDIR
 
 SORTTEMP=$(mktemp)
 
-function rcon {
-    $CRCON -p $PASSWORD -P $PORT localhost "$1"
-}
-
 function timesort {
     cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
     cat $SORTTEMP > $1
@@ -62,22 +55,21 @@ do
     then
         if [ "$ARG2" == "!help" ]
         then
-            rcon 'say "Recognized commands"'
-            rcon 'say "!times [n]   Top times"'
-            rcon 'say "!speeds [n]  Top speeds (Note: you must beat your local top speed to get on this list)"'
+            echo 'say "Recognized commands"' > $PIPE
+            echo 'say "!times [n]   Top times"' > $PIPE
+            echo 'say "!speeds [n]  Top speeds (Note: you must beat your local top speed to get on this list)"' > $PIPE
         fi
         
         #   List top times
         if [ "$ARG2" == "!times" ] || [ "$ARG2" == "!top" ]
         then
-            rcon 'say "Top times:"'
+            echo 'say "Top times:"' > $PIPE
             
             I=1
             while [ "$I" -le "${ARG3:-5}" ]
             do
-                sleep 0.1
                 read -r CMDLINE
-                rcon "$CMDLINE"
+                echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
         fi
@@ -85,14 +77,13 @@ do
         #   List top speeds
         if [ "$ARG2" == "!speeds" ]
         then
-            rcon 'say "Top speeds:"'
+            echo 'say "Top speeds:"' > $PIPE
             
             I=1
             while [ "$I" -le "${ARG3:-5}" ]
             do
-                sleep 0.1
                 read -r CMDLINE
-                rcon "$CMDLINE"
+                echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
         fi
@@ -130,8 +121,6 @@ do
     ARG2=$(echo $LINE | cut -f4- -d' ')
     ARG2=${ARG2#"\""}
     ARG2=${ARG2%"\""}
-    
-    echo $LINE
     
     if [ "$CMD" == "ClientSpeedAward" ]
     then

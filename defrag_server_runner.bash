@@ -6,9 +6,11 @@ GAME='Defrag'
 #   Directory containing server binary
 BINDIR=/usr/local/games/defrag
 #   Full name of server binary
-SERVER=oa_ded.x86_64
+SERVER=ioq3ded.x86_64
+#   Named pipe used to send commands to server
+PIPE=oa_pipe
 #   Optional server arguments
-SARGS="+set fs_homepath /home/joey/.defrag +set fs_basegame baseoa +set fs_game defrag +exec server.cfg"
+SARGS="+set com_legacyprotocol 71 +set com_pipefile $PIPE +set fs_homepath /home/joey/.defrag +set fs_basegame baseoa +set fs_game defrag +exec server.cfg"
 #   Home directory for OpenArena
 DIR=~/.defrag
 #   baseoa
@@ -38,7 +40,7 @@ cd /tmp/defrag-server-$$
 #   Run the game
 printf "${blu}=== Starting $GAME ===${end}\n"
 
-$BINDIR/$SERVER $SARGS $@ 2> >(tee >($BINDIR/$MANAGER $TEMPDIR $BASEDIR $DIR))
+$BINDIR/$SERVER $SARGS $@ 2> >(tee >($BINDIR/$MANAGER $TEMPDIR $BASEDIR $DIR $PIPE))
 
 printf "${blu}=== $GAME exited ===${end}\n"
 
