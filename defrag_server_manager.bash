@@ -39,7 +39,11 @@ function rcon {
 }
 
 function timesort {
-    sort -g -t ' ' -k 3 $1 -o $1
+    sort -t ' ' -k 3 $1 -o $1
+}
+
+function speedsort {
+    sort -r -t ' ' -k 3 $1 -o $1
 }
 
 while read -r LINE
@@ -121,7 +125,7 @@ do
     if [ "$CMD" == "ClientSpeedAward" ]
     then
         echo "say $ARG2^5 $ARG1" >> $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
-        timesort $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
+        speedsort $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
         
         if [ "$DUPLICATES" == '0' ]
         then
