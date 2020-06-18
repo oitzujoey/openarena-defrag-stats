@@ -34,24 +34,24 @@ mkdir -p $DIR/$STATSDIR/vq3/$SPEEDDIR
 mkdir -p $DIR/$STATSDIR/cpm/$TIMEDIR
 mkdir -p $DIR/$STATSDIR/cpm/$SPEEDDIR
 
+SORTTEMP=$(mktemp)
+
 function rcon {
     $CRCON -p $PASSWORD -P $PORT localhost "$1"
 }
 
 function timesort {
-    sort -t ' ' -k 3 $1 -o $1
+    cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
+    cat $SORTTEMP > $1
 }
 
 function speedsort {
-    sort -r -t ' ' -k 3 $1 -o $1
+    cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -r -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
+    cat $SORTTEMP > $1
 }
 
 while read -r LINE
 do
-    #   Display game output
-#     echo "$LINE"
-    
-    
     #   Get user inputted commands
     CMD=$(echo $LINE | cut -f1 --delimiter=":" | tr -d '[:space:]')
     ARG1=$(echo $LINE | cut -f2 --delimiter=":" | tr -d '[:space:]')
@@ -90,11 +90,11 @@ do
     fi
     
     #   Store user and time on level completion
-    SUBCMD=$(echo $LINE | cut -f6 --delimiter=" " | tr -d '[:space:]')
-    ARG1=$(echo $LINE | cut -f3 --delimiter=" " | tr -d '[:space:]')
+    SUBCMD=$(echo $LINE | rev | cut -f4 -d' ' | rev | tr -d '[:space:]')
+    ARG1=$(echo $LINE | rev | cut -f7- -d' ' | rev | cut -f3- -d' ')
     ARG1=${ARG1#"\""}
     ARG1=${ARG1%"^7"}
-    ARG2=$(echo $LINE | cut -f9 --delimiter=" " | tr -d '[:space:]' | sed -e 's/\^2//' -e 's/\^7\\n"//')
+    ARG2=$(echo $LINE | rev | cut -f1 -d' ' | rev | tr -d '[:space:]' | sed -e 's/\^2//' -e 's/\^7\\n"//')
     
     if [ "$CMD" == "broadcast" ] && [ "$SUBCMD" == "finish" ]
     then
@@ -118,9 +118,11 @@ do
     
     #   Store user and speed on level completion
     ARG1=$(echo $LINE | cut -f3 --delimiter=" " | tr -d '[:space:]')
-    ARG2=$(echo $LINE | cut -f4 --delimiter=" " | tr -d '[:space:]')
+    ARG2=$(echo $LINE | cut -f4- -d' ')
     ARG2=${ARG2#"\""}
     ARG2=${ARG2%"\""}
+    
+    echo $LINE
     
     if [ "$CMD" == "ClientSpeedAward" ]
     then
@@ -160,5 +162,7 @@ do
     fi
     
 done
+
+rm -f SORTTEMP
 
 echo "${grn}I/O Manager exited${end}"

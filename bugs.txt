@@ -4,5 +4,7 @@
     Get rid of -g option.
 2   Speed sort is reversed.
     Reverse the speed sort.
-3*  Times and speeds not correctly recorded if a space exists in the player's name.
+3   Times and speeds not correctly recorded if a space exists in the player's name.
     Make the time the last argument on the line, and make the name the rest of the arguments.
+    a   Sort does not understand how to sort times of players with a space in their name.
+        See the code.
