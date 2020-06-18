@@ -63,8 +63,8 @@ do
         if [ "$ARG2" == "!help" ]
         then
             rcon 'say "Recognized commands"'
-            rcon 'say "!times  Top times"'
-            rcon 'say "!speeds Top speeds (Note: you must beat your local top speed to get on this list)"'
+            rcon 'say "!times [n]   Top times"'
+            rcon 'say "!speeds [n]  Top speeds (Note: you must beat your local top speed to get on this list)"'
         fi
         
         #   List top times
