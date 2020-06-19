@@ -1,9 +1,8 @@
 #!/bin/bash
 
-TEMPDIR=$1
-BASEDIR=$2
-DIR=$3
-PIPE=$DIR/defrag/$4
+BASEDIR=$1
+DIR=$2
+PIPE=$DIR/defrag/$3
 #   This will be placed in .openarena by default
 STATSDIR=statistics
 TIMEDIR=times
@@ -48,16 +47,16 @@ do
     #   Get user inputted commands
     CMD=$(echo $LINE | cut -f1 --delimiter=":" | tr -d '[:space:]')
     ARG1=$(echo $LINE | cut -f2 --delimiter=":" | tr -d '[:space:]')
-    ARG2=$(echo $LINE | cut -f3 -d' ' | tr -d '[:space:]')
-    ARG3=$(echo $LINE | cut -f4 -d' ' | tr -d '[:space:]')
-    
+    ARG2=$(echo $LINE | rev | cut -f1 -d' ' | rev | tr -d '[:space:]')
+    ARG3=$(echo $LINE | rev | cut -f2 -d' ' | rev | tr -d '[:space:]')
+
     if [ "$CMD" == "say" ]
     then
         if [ "$ARG2" == "!help" ]
         then
-            echo 'say "Recognized commands"' > $PIPE
-            echo 'say "!times [n]   Top times"' > $PIPE
-            echo 'say "!speeds [n]  Top speeds (Note: you must beat your local top speed to get on this list)"' > $PIPE
+            echo 'say "^3Recognized commands"' > $PIPE
+            echo 'say "^2!times ^5[^2n^5]   ^3Top times"' > $PIPE
+            echo 'say "^2!speeds ^5[^2n^5]  ^3Top speeds (Note: you must beat your local top speed to get on this list)"' > $PIPE
         fi
         
         #   List top times
@@ -66,7 +65,21 @@ do
             echo 'say "Top times:"' > $PIPE
             
             I=1
-            while [ "$I" -le "${ARG3:-5}" ]
+            while [ "$I" -le "5" ]
+            do
+                read -r CMDLINE
+                echo "$CMDLINE" > $PIPE
+                I=$((I + 1))
+            done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
+        fi
+        
+        #   List top times + parameter
+        if [ "$ARG3" == "!times" ] || [ "$ARG3" == "!top" ]
+        then
+            echo 'say "Top times:"' > $PIPE
+            
+            I=1
+            while [ "$I" -le "${ARG2:-5}" ]
             do
                 read -r CMDLINE
                 echo "$CMDLINE" > $PIPE
@@ -80,7 +93,21 @@ do
             echo 'say "Top speeds:"' > $PIPE
             
             I=1
-            while [ "$I" -le "${ARG3:-5}" ]
+            while [ "$I" -le "5" ]
+            do
+                read -r CMDLINE
+                echo "$CMDLINE" > $PIPE
+                I=$((I + 1))
+            done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
+        fi
+        
+        #   List top speeds + parameter
+        if [ "$ARG3" == "!speeds" ]
+        then
+            echo 'say "Top speeds:"' > $PIPE
+            
+            I=1
+            while [ "$I" -le "${ARG2:-5}" ]
             do
                 read -r CMDLINE
                 echo "$CMDLINE" > $PIPE
