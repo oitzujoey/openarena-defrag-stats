@@ -38,7 +38,7 @@ function timesort {
 }
 
 function speedsort {
-    cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -r -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
+    cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -g -r -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
     cat $SORTTEMP > $1
 }
 
