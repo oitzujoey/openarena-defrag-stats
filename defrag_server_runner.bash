@@ -6,7 +6,7 @@ GAME='Defrag'
 #   Directory containing server binary
 BINDIR=/usr/local/games/defrag
 #   Full name of server binary
-SERVER=ioq3ded.x86_64
+SERVER=oa_ded.x86_64
 #   Named pipe used to send commands to server
 PIPE=oa_pipe
 #   Optional server arguments

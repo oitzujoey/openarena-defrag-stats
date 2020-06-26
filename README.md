@@ -1,6 +1,6 @@
 # openarena-defrag-stats
 Record top times and speeds for Defrag maps.
-This was designed for Ioquake3. The OpenArena engine is not currently supported (the irony!) due to the fact that it cannot be controlled using a named pipe.
+This was designed for use with OpenArena and Ioquake3.
 
 Top 5 times are listed by typing !times or !top into the console. A number can be given as well to specify how many times to show.
 Top 5 speeds are listed by typing !speeds into the console. A number can be given as well to specify how many speeds to show.
