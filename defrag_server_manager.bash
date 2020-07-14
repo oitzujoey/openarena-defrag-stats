@@ -35,7 +35,7 @@ mkdir -p $DIR/$STATSDIR/cpm/$SPEEDDIR
 SORTTEMP=$(mktemp)
 
 function timesort {
-    cat $1 | awk -F' ' '{print($NF" "$0)}' | sort -t ' ' -k 1 | cut -f2- -d' ' > ${SORTTEMP}
+    cat $1 | awk -F' ' '{print($NF" "$0)}' | sed 's/://' | sed 's/://' | sort -t ' ' -g -k 1 | cut -f2- -d' ' > ${SORTTEMP}
     cat $SORTTEMP > $1
 }
 
