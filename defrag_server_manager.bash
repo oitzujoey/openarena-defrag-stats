@@ -11,6 +11,8 @@ SPEEDDIR=speeds
 DUPLICATES=0
 #   Server port. Localhost is assumed.
 PORT='27960'
+#   Maximum number of stats that a player can request. 99 is probably excessive.
+MAXSTATS=99
 
 MAP='__unknown__'
 PROMODE='__unknown__'
@@ -71,6 +73,7 @@ do
                 echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
+            continue
         fi
         
         #   List top times + parameter
@@ -78,13 +81,19 @@ do
         then
             echo 'say "Top times:"' > $PIPE
             
+            if [ "$ARG2" -gt "$MAXSTATS" ]
+            then
+                ARG2=1000
+            fi
+            
             I=1
-            while [ "$I" -le "${ARG2:-5}" ]
+            while read -r CMDLINE && [ "$I" -le "$ARG2" ]
             do
-                read -r CMDLINE
+                
                 echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
+            continue
         fi
         
         #   List top speeds
@@ -99,6 +108,7 @@ do
                 echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
+            continue
         fi
         
         #   List top speeds + parameter
@@ -106,13 +116,18 @@ do
         then
             echo 'say "Top speeds:"' > $PIPE
             
+            if [ "$ARG2" -gt "$MAXSTATS" ]
+            then
+                ARG2=1000
+            fi
+
             I=1
-            while [ "$I" -le "${ARG2:-5}" ]
+            while read -r CMDLINE && [ "$I" -le "$ARG2" ]
             do
-                read -r CMDLINE
                 echo "$CMDLINE" > $PIPE
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
+            continue
         fi
     fi
     

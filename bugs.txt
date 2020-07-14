@@ -1,7 +1,8 @@
 1a  Time sort ignores anything after the first ':'
     Add a leading "0:" to times under 1:00:00.
-2b  Time sort ignores anything after the first ':'
+1b  Time sort ignores anything after the first ':'
     Get rid of -g option.
+1c* Times equal to or greater than 10:00:000 will be improperly sorted.
 2   Speed sort is reversed.
     Reverse the speed sort.
 3   Times and speeds not correctly recorded if a space exists in the player's name.
@@ -10,3 +11,5 @@
         See the code.
 4   Rcon is unreliable.
     Use the Ioquake3 named pipe instead.
+5   Excessively large arguments to !top and !speeds will effectively crash the system.
+    Add a magnitude cap to the argument and only read to end of file.
