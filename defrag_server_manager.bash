@@ -44,6 +44,24 @@ function speedsort {
     cat $SORTTEMP > $1
 }
 
+function printstat {
+    # Get player name.
+    STATNAME=$(printf "$2" | rev | cut -f2- -d' ' | rev | cut -f2- -d' ')
+    # Count number of "^".
+    COLORCOUNT=$(echo $STATNAME | awk -F"^" '{print NF-1}')
+    # Find length of name.
+    NAMELENGTH=${#STATNAME}
+    # Add a buffer of spaces onto the end.
+    BUFFER=$(printf "%-25s" "")
+    STATNAME="$STATNAME$(echo $STATNAME | sed "s/[^^]//g" | sed "s/\^/  /g")$BUFFER"
+    # Cut to length.
+    STATNAME=${STATNAME:0:$((25+2*COLORCOUNT))}
+
+    STATTIME=$(printf "$2" | rev | cut -f1 -d' ' | rev)
+    
+    printf "say \"^5%4d ^8| ^7%s^5%9s\"\n" "$1" "$STATNAME" "$STATTIME"  > $PIPE
+}
+
 while read -r LINE
 do
     #   Get user inputted commands
@@ -64,13 +82,14 @@ do
         #   List top times
         if [ "$ARG2" == "!times" ] || [ "$ARG2" == "!top" ]
         then
-            echo 'say "Top times:"' > $PIPE
+            echo 'say "^3Rank ^8| ^3Name                          Time"' > $PIPE
+            echo 'say "^8-----+---------------------------------------"' > $PIPE
             
             I=1
             while [ "$I" -le "5" ]
             do
                 read -r CMDLINE
-                echo "$CMDLINE" > $PIPE
+                printstat "$I" "$CMDLINE"
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
             continue
@@ -79,7 +98,8 @@ do
         #   List top times + parameter
         if [ "$ARG3" == "!times" ] || [ "$ARG3" == "!top" ]
         then
-            echo 'say "Top times:"' > $PIPE
+            echo 'say "^3Rank ^8| ^3Name                          Time"' > $PIPE
+            echo 'say "^8-----+---------------------------------------"' > $PIPE
             
             if [ "$ARG2" -gt "$MAXSTATS" ]
             then
@@ -90,7 +110,7 @@ do
             while read -r CMDLINE && [ "$I" -le "$ARG2" ]
             do
                 
-                echo "$CMDLINE" > $PIPE
+                printstat "$I" "$CMDLINE"
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$TIMEDIR/$MAP.stat
             continue
@@ -99,13 +119,14 @@ do
         #   List top speeds
         if [ "$ARG2" == "!speeds" ]
         then
-            echo 'say "Top speeds:"' > $PIPE
+            echo 'say "^3Rank ^8| ^3Name                         Speed"' > $PIPE
+            echo 'say "^8-----+---------------------------------------"' > $PIPE
             
             I=1
             while [ "$I" -le "5" ]
             do
                 read -r CMDLINE
-                echo "$CMDLINE" > $PIPE
+                printstat "$I" "$CMDLINE"
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
             continue
@@ -114,7 +135,8 @@ do
         #   List top speeds + parameter
         if [ "$ARG3" == "!speeds" ]
         then
-            echo 'say "Top speeds:"' > $PIPE
+            echo 'say "^3Rank ^8| ^3Name                         Speed"' > $PIPE
+            echo 'say "^8-----+---------------------------------------"' > $PIPE
             
             if [ "$ARG2" -gt "$MAXSTATS" ]
             then
@@ -124,7 +146,7 @@ do
             I=1
             while read -r CMDLINE && [ "$I" -le "$ARG2" ]
             do
-                echo "$CMDLINE" > $PIPE
+                printstat "$I" "$CMDLINE"
                 I=$((I + 1))
             done < $DIR/$STATSDIR/$PROMODE/$SPEEDDIR/$MAP.stat
             continue
@@ -200,7 +222,6 @@ do
             PROMODE='vq3'
         fi
     fi
-    
 done
 
 rm -f SORTTEMP
