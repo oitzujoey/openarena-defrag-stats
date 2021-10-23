@@ -204,7 +204,7 @@ do
     
     if [ "$CMD" == "Server:" ]
     then
-        MAP=$ARG1
+        MAP=$(echo $ARG1 | awk '{print tolower($0)}')
     fi
     
     #   Determine if promode is on
